@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Stock Portfolio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Stock Portfolio</h1>
+        </header>
+        <main>
+            <section class="add-stock">
+                <form action="{{ url_for('add_stock') }}" method="post" class="stock-form">
+                    <input type="text" name="symbol" placeholder="Enter stock symbol" required>
+                    <button type="Submit">Add Your Stock</button>
+                </form>
+            </section>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <section class="messages">
+                        {% for category, message in messages %}
+                            <div class="message {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </section>
+                {% endif %}
+            {% endwith %}
+
+            <section class="portfolio">
+                {% if portfolio %}
+                    <ul class="portfolio-list">
+                        {% for stock in portfolio %}
+                            <li class="portfolio-item">
+                                <div class="stock-logo">
+                                    <img src="{{ stock.logo_url }}" alt="{{ stock.symbol }} Logo" onerror="this.onerror=null; this.src='{{ url_for('static', filename='default_logo.png') }}';">
+                                </div>
+                                <div class="stock-info">
+                                    <span class="stock-symbol">{{ stock.symbol }}</span>
+                                    <span class="stock-price">${{ stock.price }}</span>
+                                    <span class="stock-timestamp">{{ stock.timestamp }}</span>
+                                </div>
+                                <a href="{{ url_for('remove_stock', symbol=stock.symbol) }}" class="remove-link">Remove</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-stocks">No stocks in your portfolio. Add some stocks to get started!</p>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>
